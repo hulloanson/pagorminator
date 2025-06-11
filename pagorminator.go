@@ -39,6 +39,10 @@ func (p PaGormMinator) count(db *gorm.DB) {
 					if whereClause, existWhere := db.Statement.Clauses["WHERE"]; existWhere {
 						tx.Where(whereClause.Expression)
 					}
+					// also add Join clauses
+					for _, join := range db.Statement.Joins {
+						tx.Joins(join.Name, join.Conds...)
+					}
 					tx.Count(&totalElements)
 					if tx.Error != nil {
 						_ = db.AddError(tx.Error)
